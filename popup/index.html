@@ -1,0 +1,49 @@
+<!doctype html>
+
+<html>
+    <head>
+        <title>Satisfying Clicks</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lora">
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Muli">
+        <link rel="stylesheet" href="popup.css"></link>
+    </head>
+
+    <body>
+        <header>
+            <img class="logo" src="../assets/icons/logo.svg">
+            Satisfying Clicks
+        </header>
+
+        <main>
+            <div id="clickarea"></div>
+            <select name="effect-choice" id="effect-choice"></select>
+            <div class="double-fieldset-container">
+                <fieldset>
+                    <legend>Color</legend>
+                    <input type="color" id="effect-color-input">
+                </fieldset>
+                <fieldset style="padding-top: 3px">
+                    <legend>Size: <output id="effect-size-output">30</output>px</legend>
+                    <input type="range" min="0" max="100" value="50" id="effect-size-input">
+                </fieldset>
+            </div>
+            <fieldset style="padding-top: 3px">
+                <legend>Duration: <output id="effect-duration-output">30</output>ms</legend>
+                <input type="range" min="0" max="100" value="50" id="effect-duration-input">
+            </fieldset>
+        </main>
+
+        <footer>
+            <button id="toggle-active-button" class="active" title="Toggle On/Off">Turn off</button>
+            <button id="reset-button" class="active" title="Reset Effect Settings">Reset</button>
+            <button id="feedback-button" class="active" title="Send Feedback Email">Feedback</button>
+        </footer>
+
+        <output id="o"></output>
+
+        <script src="clickeffects.js"></script>
+        <script src="main.js"></script>
+    </body>
+
+</html>
