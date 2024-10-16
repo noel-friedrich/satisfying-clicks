@@ -1,6 +1,6 @@
 # Satisfying Clicks
 > a chrome extension adding satisfying click animations to all websites you visit
-![Extension Screenshot](https://github.com/noel-friedrich/satisfying-clicks/blob/main/assets/screenshots/sclicks-header.png?raw=true)
+![Extension Screenshot](https://github.com/noel-friedrich/satisfying-clicks/blob/main/assets/screenshots/sclicks-header.jpg?raw=true)
 
 ## Table of contents
 * [About](#about)
