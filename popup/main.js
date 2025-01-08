@@ -5,10 +5,13 @@ const effectSizeOutput = document.getElementById("effect-size-output")
 const effectDurationInput = document.getElementById("effect-duration-input")
 const effectDurationOutput = document.getElementById("effect-duration-output")
 const effectColorInput = document.getElementById("effect-color-input")
+const secretEffectCountOutput = document.getElementById("rare-effect-count-output")
 
 const toggleActiveButton = document.getElementById("toggle-active-button")
 const resetButton = document.getElementById("reset-button")
 const feedbackButton = document.getElementById("feedback-button")
+
+const onlyShowWhenTurnedOnContainer = document.getElementById("only-show-when-turned-on")
 
 let lastAreaClickTimestamp = null
 
@@ -113,43 +116,51 @@ const SIZE_INPUT_MAX = 100
 const DURATION_INPUT_MIN = 100
 const DURATION_INPUT_MAX = 800
 
-const inputConversionTo = (min, max, percent) => {
-    const boundedPercent = Math.max(Math.min(percent, 100), 0)
-    return min + (max - min) * (boundedPercent / 100)
+// utility function to help configure a config slider
+function updateSliderInput(slider, minVal, maxVal, currVal) {
+    slider.min = minVal
+    slider.max = maxVal
+    slider.value = currVal
+
+    console.log(slider, currVal)
 }
 
-const inputConversionFrom = (min, max, value) => {
-    const percent = (value - min) / (max - min) * 100
-    return Math.max(Math.min(percent, 100), 0)
-}
-
-// [0, 100] -> size of effect in pixels
-function sizeInputToPx(inputValue) {
-    return inputConversionTo(SIZE_INPUT_MIN, SIZE_INPUT_MAX, inputValue)
-}
-
-// size of effect in pixels -> [0, 100]
-function sizePxToInput(sizePx) {
-    return inputConversionFrom(SIZE_INPUT_MIN, SIZE_INPUT_MAX, sizePx)
-}
-
-// [0, 100] -> length of effect in ms
-function durationInputToMs(inputValue) {
-    return inputConversionTo(DURATION_INPUT_MIN, DURATION_INPUT_MAX, inputValue)
-}
-
-// length of effect in ms -> [0, 100]
-function durationMsToInput(lengthMs) {
-    return inputConversionFrom(DURATION_INPUT_MIN, DURATION_INPUT_MAX, lengthMs)
+// update secret effect count
+function getSecretEffectCountMessage() {
+    const count = activeClickEffectOptions.secretEffectCount ?? 0
+    if (count == 0) {
+        return "0 times (never)"
+    } else if (count == 1) {
+        return "only once"
+    } else if (count == 2) {
+        return "twice (ever)"
+    } else if (count == 3) {
+        return "thrice (3 times)"
+    } else if (count == 6) {
+        return "half a dozen (6) times"
+    } else if (count == 12) {
+        return "a dozen (12) times"
+    } else if (count > 10000) {
+        return `${count} times (I hope nobody will ever read this message)`
+    } else if (count > 1000) {
+        return `too many times (I lost count). Just kidding, it happened ${count} times`
+    } else if (count > 100) {
+        return `unbelievably many times (${count})`
+    } else if (count > 10) {
+        return `so many times (${count}, to be exact)`
+    } else {
+        return `${count} times`
+    }
 }
 
 // update the values of the inputs
 function updateInputSettingValues() {
     effectColorInput.value = colorNameToHex(activeClickEffectOptions.color)
-    effectSizeInput.value = sizePxToInput(activeClickEffectOptions.sizePx)
-    effectDurationInput.value = durationMsToInput(activeClickEffectOptions.lengthMs)
-    effectChoice.value = activeClickEffectOptions.effectId
 
+    updateSliderInput(effectSizeInput, SIZE_INPUT_MIN, SIZE_INPUT_MAX, activeClickEffectOptions.sizePx)
+    updateSliderInput(effectDurationInput, DURATION_INPUT_MIN, DURATION_INPUT_MAX, activeClickEffectOptions.lengthMs)
+
+    effectChoice.value = activeClickEffectOptions.effectId
     effectSizeOutput.textContent = Math.round(activeClickEffectOptions.sizePx)
     effectDurationOutput.textContent = Math.round(activeClickEffectOptions.lengthMs)
 
@@ -172,9 +183,15 @@ function updateInputSettingValues() {
     // update active toggle button
     if (activeClickEffectOptions.effectId === "none") {
         toggleActiveButton.textContent = "Turn on"
+        onlyShowWhenTurnedOnContainer.style.display = "none"
     } else {
         toggleActiveButton.textContent = "Turn off"
+        onlyShowWhenTurnedOnContainer.style.display = "block"
     }
+
+    // update secret effect count
+    const secretCountMessage = getSecretEffectCountMessage()
+    secretEffectCountOutput.textContent = secretCountMessage
 }
 
 // initialize setting elements
@@ -188,14 +205,14 @@ function initEffectSettings() {
 
     // init size input
     effectSizeInput.addEventListener("input", () => {
-        activeClickEffectOptions.sizePx = sizeInputToPx(effectSizeInput.value)
+        activeClickEffectOptions.sizePx = parseInt(effectSizeInput.value)
         updateInputSettingValues()
         save()
     })
 
     // init duration input
     effectDurationInput.addEventListener("input", () => {
-        activeClickEffectOptions.lengthMs = durationInputToMs(effectDurationInput.value)
+        activeClickEffectOptions.lengthMs = parseInt(effectDurationInput.value) 
         updateInputSettingValues()
         save()
     })
@@ -236,8 +253,28 @@ function initButtons() {
     updateInputSettingValues()
 }
 
+// make some text segments expandable (...)
+function initExpandableSegments() {
+    const expandableContainers = document.querySelectorAll(".expandable")
+    for (const container of expandableContainers) {
+        const header = container.querySelector(".expansion-header")
+        const body = container.querySelector(".expansion-body")
+        if (!header || !body) continue
+
+        header.addEventListener("click", () => {
+            container.classList.add("expanded")
+        })
+    }
+}
+
 async function main() {
+    // the following should happen immediately
+    initExpandableSegments()
+
+    // now let's wait and load the settings
     await loadSettings()
+    
+    // the following process the loaded settings
     initEffectChoice()
     initEffectSettings()
     initButtons()

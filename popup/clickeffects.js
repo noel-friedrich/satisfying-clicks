@@ -324,10 +324,11 @@ function getClickEffect(effectId) {
 
 // store the current ClickEffect state
 const activeClickEffectOptions = {
-    effectId: "radial-lines",
+    effectId: "random",
     lengthMs: 300,
     sizePx: 50,
     color: "blue",
+    secretEffectCount: 0,
     smoothingFunction: EasingFunction.easeOut
 }
 

@@ -14,24 +14,40 @@
             <img class="logo" src="../assets/icons/logo.svg">
             Satisfying Clicks
         </header>
-
+        
         <main>
             <div id="clickarea"></div>
             <select name="effect-choice" id="effect-choice"></select>
-            <div class="double-fieldset-container">
-                <fieldset>
-                    <legend>Color</legend>
-                    <input type="color" id="effect-color-input">
+
+            <div id="only-show-when-turned-on">
+                <fieldset style="padding: 8px; padding-top: 3px">
+                    <legend>Super Rare Effect</legend>
+                    <span class="smaller-text expandable">
+                        <span class="expansion-header">
+                            There's a 1/1000 chance
+                        </span>
+                        <span class="expansion-body">
+                            to spawn a rare surprise animation! So far, this
+                            animation has appeared <output id="rare-effect-count-output">0 times</output>.
+                        </span>
+                    </span>
                 </fieldset>
+                <div class="double-fieldset-container">
+                    <fieldset>
+                        <legend>Color</legend>
+                        <input type="color" id="effect-color-input">
+                    </fieldset>
+                    <fieldset style="padding-top: 3px">
+                        <legend>Size: <output id="effect-size-output">30</output>px</legend>
+                        <input type="range" min="0" max="100" value="50" id="effect-size-input">
+                    </fieldset>
+                </div>
+        
                 <fieldset style="padding-top: 3px">
-                    <legend>Size: <output id="effect-size-output">30</output>px</legend>
-                    <input type="range" min="0" max="100" value="50" id="effect-size-input">
+                    <legend>Duration: <output id="effect-duration-output">30</output>ms</legend>
+                    <input type="range" min="0" max="100" value="50" id="effect-duration-input">
                 </fieldset>
             </div>
-            <fieldset style="padding-top: 3px">
-                <legend>Duration: <output id="effect-duration-output">30</output>ms</legend>
-                <input type="range" min="0" max="100" value="50" id="effect-duration-input">
-            </fieldset>
         </main>
 
         <footer>

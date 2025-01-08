@@ -120,3 +120,20 @@ footer button:not(.active) {
     cursor: default;
     color: rgb(151, 151, 151);
 }
+
+.smaller-text {
+    font-size: 0.85em;
+}
+
+.expandable:not(.expanded) {
+    cursor: pointer;
+}
+
+.expandable:not(.expanded) > .expansion-header::after {
+    content: "...";
+    color: gray;
+}
+
+.expandable:not(.expanded) > .expansion-body {
+    display: none;
+}
