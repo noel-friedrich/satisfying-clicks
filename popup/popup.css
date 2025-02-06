@@ -137,3 +137,31 @@ footer button:not(.active) {
 .expandable:not(.expanded) > .expansion-body {
     display: none;
 }
+
+.fake-link-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+.fake-link-btn:hover {
+    text-decoration: underline;
+}
+
+#secret-fieldset:not(.secret-enabled) .show-when-secret-enabled {
+    display: none;
+}
+
+#secret-fieldset:not(.secret-enabled) .show-when-secret-disabled {
+    display: block;
+}
+
+#secret-fieldset.secret-enabled .show-when-secret-enabled {
+    display: block;
+}
+
+#secret-fieldset.secret-enabled .show-when-secret-disabled {
+    display: none;
+}

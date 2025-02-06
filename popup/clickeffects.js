@@ -359,6 +359,7 @@ const activeClickEffectOptions = {
     sizePx: 50,
     color: "blue",
     secretEffectCount: 0,
+    secretEffectActive: false,
     smoothingFunction: EasingFunction.easeOut
 }
 

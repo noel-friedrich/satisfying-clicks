@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Satisfying Clicks",
     "description": "Make clicking more satisfying one click at a time",
-    "version": "2.1.0",
+    "version": "2.2.1",
 
     "permissions": [
         "storage"

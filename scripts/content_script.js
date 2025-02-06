@@ -359,6 +359,7 @@ const activeClickEffectOptions = {
     sizePx: 50,
     color: "blue",
     secretEffectCount: 0,
+    secretEffectActive: false,
     smoothingFunction: EasingFunction.easeOut
 }
 
@@ -408,7 +409,7 @@ document.addEventListener("mousedown", event => {
     }
 
     // super secret effect with probability 1/1000
-    if (Math.random() < 0.001) {
+    if (activeClickEffectOptions.secretEffectActive && Math.random() < 0.001) {
         activeClickEffect = SuperSecretEffect
         activeClickEffectOptions.secretEffectCount++
         saveSettings()

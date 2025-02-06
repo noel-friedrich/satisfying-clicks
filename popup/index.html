@@ -20,18 +20,6 @@
             <select name="effect-choice" id="effect-choice"></select>
 
             <div id="only-show-when-turned-on">
-                <fieldset style="padding: 8px; padding-top: 3px">
-                    <legend>Super Rare Effect</legend>
-                    <span class="smaller-text expandable">
-                        <span class="expansion-header">
-                            There's a 1/1000 chance
-                        </span>
-                        <span class="expansion-body">
-                            to spawn a rare surprise animation! So far, this
-                            animation has appeared <output id="rare-effect-count-output">0 times</output>.
-                        </span>
-                    </span>
-                </fieldset>
                 <div class="double-fieldset-container">
                     <fieldset>
                         <legend>Color</legend>
@@ -46,6 +34,23 @@
                 <fieldset style="padding-top: 3px">
                     <legend>Duration: <output id="effect-duration-output">30</output>ms</legend>
                     <input type="range" min="0" max="100" value="50" id="effect-duration-input">
+                </fieldset>
+                
+                <fieldset style="padding: 8px; padding-top: 3px" id="secret-fieldset">
+                    <legend>Super Rare Effect</legend>
+                    <span class="smaller-text show-when-secret-disabled">
+                        <button class="fake-link-btn" id="enable-secret-button">Click to Enable</button>
+                    </span>
+                    <span class="smaller-text expandable show-when-secret-enabled">
+                        <span class="expansion-header">
+                            There's a 1/1000 chance
+                        </span>
+                        <span class="expansion-body">
+                            to spawn a rare surprise animation! So far, this
+                            animation has appeared <output id="rare-effect-count-output">0 times</output>.
+                            <button class="fake-link-btn" id="disable-secret-button">Click to Disable</button>
+                        </span>
+                    </span>
                 </fieldset>
             </div>
         </main>

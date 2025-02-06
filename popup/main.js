@@ -5,11 +5,15 @@ const effectSizeOutput = document.getElementById("effect-size-output")
 const effectDurationInput = document.getElementById("effect-duration-input")
 const effectDurationOutput = document.getElementById("effect-duration-output")
 const effectColorInput = document.getElementById("effect-color-input")
-const secretEffectCountOutput = document.getElementById("rare-effect-count-output")
 
 const toggleActiveButton = document.getElementById("toggle-active-button")
 const resetButton = document.getElementById("reset-button")
 const feedbackButton = document.getElementById("feedback-button")
+
+const secretEffectCountOutput = document.getElementById("rare-effect-count-output")
+const enableSecretButton = document.getElementById("enable-secret-button")
+const disableSecretButton = document.getElementById("disable-secret-button")
+const secretFieldset = document.getElementById("secret-fieldset")
 
 const onlyShowWhenTurnedOnContainer = document.getElementById("only-show-when-turned-on")
 
@@ -192,6 +196,13 @@ function updateInputSettingValues() {
     // update secret effect count
     const secretCountMessage = getSecretEffectCountMessage()
     secretEffectCountOutput.textContent = secretCountMessage
+
+    // update secret setting display
+    if (activeClickEffectOptions.secretEffectActive) {
+        secretFieldset.classList.add("secret-enabled")
+    } else {
+        secretFieldset.classList.remove("secret-enabled")
+    }
 }
 
 // initialize setting elements
@@ -248,6 +259,20 @@ function initButtons() {
         // silly protection against stupid email scrapers
         const feedbackEmail = "ed.kooltuo@hcirdeirf.leon".split("").reverse().join("")
         location.href = `mailto:${feedbackEmail}`
+    })
+
+    // secret enable
+    enableSecretButton.addEventListener("click", () => {
+        activeClickEffectOptions.secretEffectActive = true
+        updateInputSettingValues()
+        save()
+    })
+    
+    // secret disable
+    disableSecretButton.addEventListener("click", () => {
+        activeClickEffectOptions.secretEffectActive = false
+        updateInputSettingValues()
+        save()
     })
 
     updateInputSettingValues()
