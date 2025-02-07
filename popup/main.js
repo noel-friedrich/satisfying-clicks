@@ -15,9 +15,9 @@ const enableSecretButton = document.getElementById("enable-secret-button")
 const disableSecretButton = document.getElementById("disable-secret-button")
 const secretFieldset = document.getElementById("secret-fieldset")
 
-const onlyShowWhenTurnedOnContainer = document.getElementById("only-show-when-turned-on")
+const fakeCursorElement = document.getElementById("fake-cursor")
 
-let lastAreaClickTimestamp = null
+const onlyShowWhenTurnedOnContainer = document.getElementById("only-show-when-turned-on")
 
 // write the content scripts a message to update the settings
 async function tellContentScriptToUpdate() {
@@ -47,42 +47,150 @@ function save() {
     }, 300)
 }
 
-clickArea.addEventListener("mousedown", event => {
-    // get the active effect (if it exists), if not abort
-    const activeClickEffect = getClickEffect(activeClickEffectOptions.effectId)
-    if (!activeClickEffect) {
-        return
+// fake cursor class to manage fake cursor moving around
+class FakeCursor {
+
+    constructor() {
+        this.pos = { x: 0.5, y: 0.5 }
+        this.goalPos = { x: 0.5, y: 0.5 }
+        this.speed = 3
+        this.opacity = 1
+        
+        this.followingRealCursor = false
     }
 
-    // spawn it!
-    let position = { x: event.clientX, y: event.clientY }
-    activeClickEffect.spawn(position, activeClickEffectOptions)
-
-    lastAreaClickTimestamp = Date.now()
-})
-
-// spawn random clickEffects inside the clickarea
-setInterval(() => {
-    // if there was a manual click in the last 1.5 seconds, don't
-    if (lastAreaClickTimestamp !== null && Date.now() - lastAreaClickTimestamp < 1500) {
-        return
+    get visible() {
+        return this.opacity > 0.99
     }
 
-    // get the active effect (if it exists), if not abort
-    const activeClickEffect = getClickEffect(activeClickEffectOptions.effectId)
-    if (!activeClickEffect) {
-        return
+    get globalPos() {
+        // get position relative to body
+        const clickAreaRect = clickArea.getBoundingClientRect()
+        return {
+            x: clickAreaRect.left + clickAreaRect.width * this.pos.x,
+            y: clickAreaRect.top + clickAreaRect.height * this.pos.y
+        }
     }
 
-    // choose a random position in the clickArea (well inside)
-    const clickAreaRect = clickArea.getBoundingClientRect()
-    const randomPosition = {
-        x: clickAreaRect.left + clickAreaRect.width * (0.2 + Math.random() * 0.6),
-        y: clickAreaRect.top + clickAreaRect.height * (0.2 + Math.random() * 0.6)
+    getRandomPosition(padding=0.2) {
+        // get random position with padding
+        return {
+            x: padding + Math.random() * (1 - padding * 2),
+            y: padding + Math.random() * (1 - padding * 2)
+        }
     }
 
-    activeClickEffect.spawn(randomPosition, activeClickEffectOptions)
-}, 500)
+    updateHtml() {
+        // update the html fakeCursorElement to match current status
+        fakeCursorElement.style.opacity = this.opacity
+        fakeCursorElement.style.display = this.visible ? "block" : "none"
+
+        // update pos
+        const clickAreaRect = clickArea.getBoundingClientRect()
+        fakeCursorElement.style.left = `${clickAreaRect.width * this.pos.x - 1}px`
+        fakeCursorElement.style.top = `${clickAreaRect.height * this.pos.y - 1}px`
+    }
+
+    spawnEffectAtCurrPos() {
+        // get the active effect (if it exists), if not abort
+        const activeClickEffect = getClickEffect(activeClickEffectOptions.effectId)
+        if (!activeClickEffect) {
+            return
+        }
+
+        // ClickEffect needs to be spawned relative to popup viewport (globalPos)
+        activeClickEffect.spawn(this.globalPos, activeClickEffectOptions)
+    }
+    
+    initListeners() {
+        // init event listeners to make cursor take over
+
+        // utility to get coord from event normalized
+        function getEventPos(event) {
+            const clickAreaRect = clickArea.getBoundingClientRect()
+            return {
+                x: (event.clientX - clickAreaRect.left) / clickAreaRect.width,
+                y: (event.clientY - clickAreaRect.top) / clickAreaRect.height
+            }
+        }
+
+        // on mouseenter, make mouse take over
+        clickArea.addEventListener("mouseenter", event => {
+            this.goalPos = getEventPos(event)
+            this.followingRealCursor = true
+        })
+
+        // on mousemove, move the goal to adjust dynamically
+        clickArea.addEventListener("mousemove", event => {
+            this.goalPos = getEventPos(event)
+        })
+
+        // on mouseleave, the normal cursor should take over again
+        clickArea.addEventListener("mouseleave", event => {
+            this.followingRealCursor = false
+        })
+
+        // on mouseclick, spawn effect!
+        clickArea.addEventListener("mousedown", event => {
+            this.spawnEffectAtCurrPos()
+        })
+    }
+
+    initMovement() {
+        // function to be called on every animation tick (~60fps)
+        let lastFrameTime = performance.now()
+        const update = async () => {
+            // compute time delta
+            const dt = Math.min(performance.now() - lastFrameTime, 100)
+            lastFrameTime = performance.now()
+
+            // compute goal delta to go to
+            const goalDelta = {
+                x: this.goalPos.x - this.pos.x,
+                y: this.goalPos.y - this.pos.y
+            }
+            const goalDeltaLength = Math.sqrt(goalDelta.x ** 2 + goalDelta.y ** 2)
+
+            // change opacity based on real cursor status
+            if (this.followingRealCursor) {
+                // this.opacity = Math.max(0, this.opacity - 0.01)
+            } else {
+                this.opacity = Math.min(1, this.opacity + 0.01)
+            }
+
+            // exponentially decrease the distance to goal until we reach it
+            if (goalDeltaLength < 0.01) {
+                if (!this.followingRealCursor) {
+                    this.goalPos = this.getRandomPosition()
+    
+                    // only spawn effect if currently visible
+                    if (this.visible) {
+                        this.spawnEffectAtCurrPos()
+                    }
+                    
+                    // wait a bit before moving again
+                    await new Promise(resolve => setTimeout(resolve, 100))
+                } else {
+                    // we're close enough to just move it manually
+                    this.pos.x = this.goalPos.x
+                    this.pos.y = this.goalPos.y
+                }
+            } else {
+                this.pos.x += goalDelta.x / dt * this.speed
+                this.pos.y += goalDelta.y / dt * this.speed
+            }
+
+            // update html and do it again in a bit
+            this.updateHtml()
+            window.requestAnimationFrame(update)
+        }
+
+        window.requestAnimationFrame(update)
+    }
+
+}
+
+const fakeCursor = new FakeCursor()
 
 // initializes effect choice with available effects
 function initEffectChoice() {
@@ -125,8 +233,6 @@ function updateSliderInput(slider, minVal, maxVal, currVal) {
     slider.min = minVal
     slider.max = maxVal
     slider.value = currVal
-
-    console.log(slider, currVal)
 }
 
 // update secret effect count
@@ -303,6 +409,9 @@ async function main() {
     initEffectChoice()
     initEffectSettings()
     initButtons()
+
+    fakeCursor.initListeners()
+    fakeCursor.initMovement()
 }
 
 main()

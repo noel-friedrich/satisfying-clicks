@@ -34,9 +34,22 @@ main #clickarea {
     border: 1px solid #ccc;
     padding: 10px;
     height: 140px;
+    position: relative;
 
     background-size: 40px 40px;
     background-image: radial-gradient(circle, #000000 1px, rgba(0, 0, 0, 0) 1px);
+
+    cursor: none;
+}
+
+main #clickarea #fake-cursor {
+    background-image: url("cursor.png");
+    image-rendering: crisp-edges;
+    width: 12px;
+    height: 19px;
+    position: absolute;
+    pointer-events: none;
+    z-index: 10000000;
 }
 
 main #effect-choice {
