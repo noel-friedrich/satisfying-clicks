@@ -29,13 +29,13 @@
                     </fieldset>
                     <fieldset style="padding-top: 3px">
                         <legend>Size: <output id="effect-size-output">30</output>px</legend>
-                        <input type="range" min="0" max="100" value="50" id="effect-size-input">
+                        <input type="range" min="0" max="100" value="50" step="5" id="effect-size-input">
                     </fieldset>
                 </div>
         
                 <fieldset style="padding-top: 3px">
                     <legend>Duration: <output id="effect-duration-output">30</output>ms</legend>
-                    <input type="range" min="0" max="100" value="50" id="effect-duration-input">
+                    <input type="range" min="0" max="100" value="50" step="5" id="effect-duration-input">
                 </fieldset>
                 
                 <fieldset style="padding: 8px; padding-top: 3px" id="secret-fieldset">
@@ -60,7 +60,7 @@
         <footer>
             <button id="toggle-active-button" class="active" title="Toggle On/Off">Turn off</button>
             <button id="reset-button" class="active" title="Reset Effect Settings">Reset</button>
-            <button id="feedback-button" class="active" title="Send Feedback Email">Feedback</button>
+            <button id="help-button" class="active" title="Open Help Page">Help</button>
         </footer>
 
         <output id="o"></output>

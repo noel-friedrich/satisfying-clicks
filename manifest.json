@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Satisfying Clicks",
     "description": "Make clicking more satisfying one click at a time",
-    "version": "2.2.1",
+    "version": "2.5.0",
 
     "permissions": [
         "storage"
@@ -19,7 +19,6 @@
         "48": "assets/icons/icon48.png",
         "128": "assets/icons/icon128.png"
     },
-
     
     "content_scripts": [
         {
@@ -27,5 +26,9 @@
             "js": ["scripts/content_script.js"],
             "run_at": "document_start"
         }
-    ]
+    ],
+
+    "background": {
+        "service_worker": "scripts/background.js"
+    }
 }

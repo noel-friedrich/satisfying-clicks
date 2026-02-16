@@ -163,6 +163,148 @@ class ExpandingCircleEffect extends ClickEffect {
 
 }
 
+class PixelWave extends ClickEffect {
+
+    static name = "Pixel Wave"
+
+    // experimentally found values that work well enough
+    static infectProbability = 0.15
+    static totalSimulationSteps = 40
+    static extraSizeFactor = 2
+    static canvasSize = 71
+    static decayFactor = 0.9
+
+    initPixelBuffer() {
+        this.imageData = this.context.createImageData(this.matrixSize.x, this.matrixSize.y)
+        this.pixels = this.imageData.data
+    }
+
+    extractRGBFromColorName(colorName) {
+        const canvas = document.createElement("canvas")
+        canvas.width = 1
+        canvas.height = 1
+        const ctx = canvas.getContext("2d")
+        ctx.fillStyle = colorName
+        ctx.fillRect(0, 0, 1, 1)
+        const data = ctx.getImageData(0, 0, 1, 1).data
+        return [data[0], data[1], data[2]]
+    }
+
+    construct(position) {
+        this.canvas = ClickEffect.createEffectElement({tagName: "canvas", position})
+
+        this.matrixSize = {
+            x: PixelWave.canvasSize,
+            y: PixelWave.canvasSize,
+        }
+        
+        this.canvas.width = this.matrixSize.x
+        this.canvas.height = this.matrixSize.y
+        this.canvas.style.width = `${this.sizePx * PixelWave.extraSizeFactor}px`
+        this.canvas.style.height = `${this.sizePx * PixelWave.extraSizeFactor}px`
+        this.canvas.style.imageRendering = "pixelated"
+
+        this.context = this.canvas.getContext("2d")
+        
+        this.dataGrid = Array.from({length: this.matrixSize.y})
+            .map(() => Array.from({length: this.matrixSize.x}, () => 0))
+            
+        this.activatedGrid = Array.from({length: this.matrixSize.y})
+            .map(() => Array.from({length: this.matrixSize.x}, () => false))
+
+        this.initPixelBuffer()
+
+        const middlePixelPos = {
+            x: Math.floor(this.matrixSize.x / 2),
+            y: Math.floor(this.matrixSize.y / 2)
+        }
+
+        this.activatedGrid[middlePixelPos.y][middlePixelPos.x] = true
+        this.dataGrid[middlePixelPos.y][middlePixelPos.x] = 1
+        this.rgbColor = this.extractRGBFromColorName(this.color)
+        
+        this.startTimestamp = Date.now()
+        this.simulationStepCount = 0
+    }
+
+    updatePhysics() {
+        // simulate a total amount of ExpandingWaveEffect.totalSimulationSteps linearly across the lengthMs
+        const timeDeltaMs = Date.now() - this.startTimestamp
+        const expectedStepsDone = timeDeltaMs / this.lengthMs * PixelWave.totalSimulationSteps
+        
+        // simulate until we reach the expected simulation depth
+        // (this also makes the simulation independant of how often this.update() is called,
+        //  which might be at 30fps or 60fps based on the machine specifications)
+        while (this.simulationStepCount < expectedStepsDone) {
+            this.simulatePhysicsStep()
+            this.simulationStepCount++
+        }
+    }
+
+    simulatePhysicsStep() {
+        // store all relevant directions
+        const relevantDirections = [
+            [-1,  0],
+            [ 1,  0],
+            [ 0,  1],
+            [ 0, -1],
+            [ 1,  1],
+            [-1,  1],
+            [-1, -1],
+            [ 1, -1],
+        ]
+
+        // update grid in a cellular automata style
+        const bufferActivatedGrid = structuredClone(this.activatedGrid)
+        for (let x = 0; x < this.matrixSize.x; x++) {
+            for (let y = 0; y < this.matrixSize.y; y++) {
+                if (!bufferActivatedGrid[y][x]) {
+                    continue
+                }
+                
+                for (const [dx, dy] of relevantDirections) {
+                    const posX = Math.min(Math.max(x + dx, 0), this.matrixSize.x - 1)
+                    const posY = Math.min(Math.max(y + dy, 0), this.matrixSize.y - 1)
+
+                    if (!this.activatedGrid[posY][posX] && Math.random() < PixelWave.infectProbability) {
+                        this.activatedGrid[posY][posX] = true
+                        this.dataGrid[posY][posX] = 1
+                    }
+                }
+
+                this.dataGrid[y][x] *= PixelWave.decayFactor
+            }   
+        }
+    }
+
+    redrawCanvas() {
+        let i = 0; // index into pixels (RGBA)
+        for (let y = 0; y < this.matrixSize.y; y++) {
+            const row = this.dataGrid[y];
+            for (let x = 0; x < this.matrixSize.x; x++) {
+                const v = Math.floor(Math.min(Math.max(row[x], 0), 1) * 255)
+
+                this.pixels[i++] = this.rgbColor[0]
+                this.pixels[i++] = this.rgbColor[1]
+                this.pixels[i++] = this.rgbColor[2]
+                this.pixels[i++] = v * (1 - this.tValue)
+            }
+        }
+
+        this.context.putImageData(this.imageData, 0, 0)
+    }
+
+    update() {
+        this.updatePhysics()
+        this.redrawCanvas()
+    }
+
+    destruct() {
+        this.canvas.remove()
+    }
+
+}
+
 class ExpandingBallEffect extends ClickEffect {
 
     static name = "Expanding Ball"
@@ -339,7 +481,8 @@ const clickEffectMap = {
     "expanding-circle": ExpandingCircleEffect,
     "expanding-ball": ExpandingBallEffect,
     "radial-lines": RadialLinesEffect,
-    "radial-dots": RadialDotsEffect
+    "radial-dots": RadialDotsEffect,
+    "pixel-wave": PixelWave
 }
 
 function getClickEffect(effectId) {

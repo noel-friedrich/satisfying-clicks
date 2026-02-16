@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" style="overscroll-behavior: contain;">
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Hello Page welcoming users to the Satisfying Clicks chrome extension">
+        <meta charset="UTF-8">
+        <title>Welcome to Satisfying Clicks!</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lora">
+    </head>
+
+    <body class="sticky-header">
+
+        <header class="at-top">
+            <div class="header-content">
+                <a href="" class="logo-container">
+                    <img src="../assets/icons/logo.svg" class="logo" alt="Satisfying Clicks Logo" />
+                    <div class="logo-text" href="">Satisfying Clicks</div>
+                </a>
+                <div class="link-island">
+                    <a href="https://chromewebstore.google.com/detail/satisfying-clicks/hdlelgoehliepfcpbeknlbpbcfljpkpg">
+                        Chrome Web Store
+                    </a>
+                </div>
+                <div class="hamburger-icon" tabindex="0">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            <div class="header-drop-menu">
+                <a href="https://chromewebstore.google.com/detail/satisfying-clicks/hdlelgoehliepfcpbeknlbpbcfljpkpg">
+                    Chrome Web Store
+                </a>
+            </div>
+        </header>
+        <div class="header-placeholder"></div>
+        
+        <main>
+            <h1>
+                Thank you very much for installing Satisfying Clicks!
+            </h1>
+            <p>
+                The satisfying click effects will work on all<span style="color:red">*</span>
+                new pages you visit from now on. You can always customize or disable the effects by clicking on
+                the extension in your toolbar.
+                <span style="height: 10px; display: block;"></span>
+                <span style="color:red">*<span style="font-style: italic">due to Google restrictions, the extension can't work on
+                    browser-specific pages like the settings page or your startup page.</span></span>
+            </p>
+            <img src="../assets/screenshots/sclicks-header.jpg" alt="Satisfying Clicks Logo" />
+            <p>
+                Below you'll find some <span style="font-weight: bold;">F</span>requently
+                <span style="font-weight: bold;">A</span>sked <span style="font-weight: bold;">Q</span>uestions (and answers!).
+                If you have more questions or feedback, you can mail me 
+                <a href="mailto:noel.friedrich@outlook.de">here</a>.
+            </p>
+            <div class="faq-container">
+                <div class="entry">
+                    <div class="question">
+                        How do I use Satisfying Clicks?
+                    </div>
+                    <div class="answer">
+                        Satisfying Clicks works on all open pages automatically.
+                        Just visit any website and click anywhere. You'll see
+                        fun click effects that you can customize by clicking
+                        the extension in your toolbar.
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="question">
+                        Can you implement my idea for a new Click-Effect design?
+                    </div>
+                    <div class="answer">
+                        <strong>Sure</strong>! Feel free to
+                        <a href="mailto:noel.friedrich@outlook.de">drop a message</a>
+                        with your idea and design. If it fits and works from a technical perspective,
+                        we can make it happen!
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="question">
+                        What's the rare click animation?
+                    </div>
+                    <div class="answer">
+                        The rare animation has a 1 in 1,000 chance of appearing
+                        when you click. It's a small but exciting surprise! Keep on
+                        clicking and see if you can find it.
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="question">
+                        Does this extension track my clicks or collect data?
+                    </div>
+                    <div class="answer">
+                        <strong>No</strong>. This extension does not collect any data whatsoever.
+                        It does not send any data to any external server and therefore works entirely offline.
+                        In fact, there does not even exist an external server 😊.
+                    </div>
+                </div>
+                <div class="entry">
+                    <div class="question">
+                        I love this extension so much!
+                    </div>
+                    <div class="answer">
+                        Great to hear! You should consider giving it a rating in the
+                        <a href="https://chromewebstore.google.com/detail/satisfying-clicks/hdlelgoehliepfcpbeknlbpbcfljpkpg">Chrome Web Store</a>.
+                        If you have any ideas or just want to say hello, feel free to <a href="mailto:noel.friedrich@outlook.de">email</a> me (the developer).
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <hr>
+            <div class="footer-text">
+                <span lang="en" class="text">Made by <a style="color: var(--text-color)" href="mailto:noel.friedrich@outlook.de">Noel Friedrich</a></span>
+                <span lang="de" class="text">Erstellt von Noel Friedrich</span>
+                <button class="theme-changer" id="change-style-a">
+                    <span lang="en">Change Theme</span>
+                    <span lang="de">Hell/Dunkel</span>
+                </button>
+            </div>
+        </footer>
+
+        <script src="clickeffects-full.js"></script>
+        <script src="main.js"></script>
+    </body>
+
+</html>

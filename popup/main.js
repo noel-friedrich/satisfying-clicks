@@ -8,7 +8,7 @@ const effectColorInput = document.getElementById("effect-color-input")
 
 const toggleActiveButton = document.getElementById("toggle-active-button")
 const resetButton = document.getElementById("reset-button")
-const feedbackButton = document.getElementById("feedback-button")
+const helpButton = document.getElementById("help-button")
 
 const secretEffectCountOutput = document.getElementById("rare-effect-count-output")
 const enableSecretButton = document.getElementById("enable-secret-button")
@@ -105,6 +105,11 @@ class FakeCursor {
     initListeners() {
         // init event listeners to make cursor take over
 
+        // sometimes, the browser doesn't fire the correct mouseleave.
+        // in that case, the mouse won't start moving on its own. So let's
+        // pretend that not moving/clicking the mouse for 3 seconds is equivalent.
+        let releaseMoveTimeout = null
+
         // utility to get coord from event normalized
         function getEventPos(event) {
             const clickAreaRect = clickArea.getBoundingClientRect()
@@ -118,11 +123,16 @@ class FakeCursor {
         clickArea.addEventListener("mouseenter", event => {
             this.goalPos = getEventPos(event)
             this.followingRealCursor = true
+            releaseMoveTimeout && clearTimeout(releaseMoveTimeout)
         })
 
         // on mousemove, move the goal to adjust dynamically
         clickArea.addEventListener("mousemove", event => {
             this.goalPos = getEventPos(event)
+            this.followingRealCursor = true
+            
+            releaseMoveTimeout && clearTimeout(releaseMoveTimeout)
+            releaseMoveTimeout = setTimeout(() => {this.followingRealCursor = false}, 3000)
         })
 
         // on mouseleave, the normal cursor should take over again
@@ -133,6 +143,11 @@ class FakeCursor {
         // on mouseclick, spawn effect!
         clickArea.addEventListener("mousedown", event => {
             this.spawnEffectAtCurrPos()
+            this.goalPos = getEventPos(event)
+            this.followingRealCursor = true
+            
+            releaseMoveTimeout && clearTimeout(releaseMoveTimeout)
+            releaseMoveTimeout = setTimeout(() => {this.followingRealCursor = false}, 3000)
         })
     }
 
@@ -180,7 +195,7 @@ class FakeCursor {
                 this.pos.y += goalDelta.y / dt * this.speed
             }
 
-            // update html and do it again in a bit
+            // update html and do it again in a bit (blit haha)
             this.updateHtml()
             window.requestAnimationFrame(update)
         }
@@ -198,7 +213,7 @@ function initEffectChoice() {
     effectChoice.innerHTML = ""
 
     const allClickEffects = Object.entries(clickEffectMap)
-        .concat([["random", {name: "Random"}], ["none", {name: "None"}]])
+        .concat([["random", {name: "Random Effect"}], ["none", {name: "None"}]])
     for (const [effectId, effect] of allClickEffects) {
         const option = document.createElement("option")
         option.value = effectId
@@ -311,6 +326,11 @@ function updateInputSettingValues() {
     }
 }
 
+// rounding util (to not be used later oopsie)
+function roundToNearestMultiple(numberToRound, base) {
+    return Math.round(numberToRound / base) * base
+}
+
 // initialize setting elements
 function initEffectSettings() {
     // init color input
@@ -322,14 +342,14 @@ function initEffectSettings() {
 
     // init size input
     effectSizeInput.addEventListener("input", () => {
-        activeClickEffectOptions.sizePx = parseInt(effectSizeInput.value)
+        activeClickEffectOptions.sizePx = roundToNearestMultiple(parseInt(effectSizeInput.value), 5)
         updateInputSettingValues()
         save()
     })
 
     // init duration input
     effectDurationInput.addEventListener("input", () => {
-        activeClickEffectOptions.lengthMs = parseInt(effectDurationInput.value) 
+        activeClickEffectOptions.lengthMs = roundToNearestMultiple(parseInt(effectDurationInput.value), 5)
         updateInputSettingValues()
         save()
     })
@@ -361,10 +381,9 @@ function initButtons() {
     })
 
     // feedback button
-    feedbackButton.addEventListener("click", () => {
-        // silly protection against stupid email scrapers
-        const feedbackEmail = "ed.kooltuo@hcirdeirf.leon".split("").reverse().join("")
-        location.href = `mailto:${feedbackEmail}`
+    helpButton.addEventListener("click", () => {
+        const helloUrl = chrome.runtime.getURL("hello/index.html")
+        chrome.tabs.create({ url: helloUrl })
     })
 
     // secret enable
