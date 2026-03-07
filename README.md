@@ -11,9 +11,11 @@
 * [Status](#status)
 
 ## About
-Satisfying Clicks adds click animations to your browser! With a simple click, watch as your ordinary browsing experience transforms into a delightful symphony of animations. Each click is met with a touch of magic, adding a sense of satisfaction to your online adventures. What's more? Satisfying Clicks is designed with your ease in mind. It's plug-and-play, requiring no complicated settings or configurations. Just install and enjoy the soothing clicks that follow your every move on the web.
+Satisfying Clicks adds fun, customizable click animations to your browser. It has no ads, is completely free, open source and just works out of the box. Personalize the effects to suit your style and make each click more enjoyable.
 
-Rest easy knowing that your privacy is our top priority. Satisfying Clicks doesn't collect any data, ensuring your online activities remain completely private. Experience the joy of seamless, visually satisfying clicks without any worries. Elevate your browsing with Satisfying Clicks today!
+For a little extra excitement, there’s a secret rare click animation with a 1/1000 chance of appearing. It’s a small surprise, but when it does show up, it’s sure to bring a smile to your face.
+
+Satisfying Clicks is about to make your browser experience that little bit more satisfying and fun. Why not give it a try?
 
 ## How to use
 1. [Install the extension.](#installation)
