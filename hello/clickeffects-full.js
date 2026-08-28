@@ -37,7 +37,7 @@ class ClickEffect {
         tagName = "div",
         position = null,
         appendTo = document.body
-    }) {
+    }={}) {
         const element = document.createElement(tagName)
         element.classList.add("sclicks--element")
         
@@ -161,6 +161,51 @@ class ExpandingCircleEffect extends ClickEffect {
         this.circleElement.remove()
     }
 
+}
+
+class SplatEffect extends ClickEffect {
+
+    static name = "Splat"
+
+    static numCircles = 50
+
+    construct(position) {
+        this.containerElement = ClickEffect.createEffectElement()
+        
+        this.elements = []
+        for (let i = 0; i < SplatEffect.numCircles; i++) {
+            const halfSize = this.sizePx * 0.5
+            const randomAngle = Math.random() * Math.PI * 2
+            const randomOffsetDistance = Math.random() * halfSize
+            const randomSize = Math.max((halfSize - randomOffsetDistance * 0.8) * Math.random(), 5)
+            
+            const element = ClickEffect.createEffectElement({
+                appendTo: this.containerElement,
+                position: {
+                    x: position.x + Math.cos(randomAngle) * randomOffsetDistance,
+                    y: position.y + Math.sin(randomAngle) * randomOffsetDistance
+                }
+            })
+
+            Object.assign(element.style, {
+                background: this.color,
+                width: `${randomSize}px`,
+                height: `${randomSize}px`,
+                borderRadius: "50%"
+            })
+
+            this.elements.push(element)
+        }
+    }
+
+    update() {
+        this.containerElement.style.opacity = 1 - this.tValue
+    }
+
+    destruct() {
+        this.containerElement.remove()
+    }
+    
 }
 
 class PixelWave extends ClickEffect {
@@ -482,7 +527,8 @@ const clickEffectMap = {
     "expanding-ball": ExpandingBallEffect,
     "radial-lines": RadialLinesEffect,
     "radial-dots": RadialDotsEffect,
-    "pixel-wave": PixelWave
+    "pixel-wave": PixelWave,
+    "splat": SplatEffect
 }
 
 function getClickEffect(effectId) {
@@ -551,8 +597,8 @@ document.addEventListener("mousedown", event => {
         return
     }
 
-    // super secret effect with probability 1/1000
-    if (activeClickEffectOptions.secretEffectActive && Math.random() < 0.001) {
+    // super secret effect with probability 1/10000
+    if (activeClickEffectOptions.secretEffectActive && Math.random() < 1 / 10000) {
         activeClickEffect = SuperSecretEffect
         activeClickEffectOptions.secretEffectCount++
         saveSettings()
