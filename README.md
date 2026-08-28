@@ -13,7 +13,7 @@
 ## About
 Satisfying Clicks adds fun, customizable click animations to your browser. It has no ads, is completely free, open source and just works out of the box. Personalize the effects to suit your style and make each click more enjoyable.
 
-For a little extra excitement, there’s a secret rare click animation with a 1/1000 chance of appearing. It’s a small surprise, but when it does show up, it’s sure to bring a smile to your face.
+For a little extra excitement, there’s a secret rare click animation with a 1/10000 chance of appearing. It’s a small surprise, but when it does show up, it’s sure to bring a smile to your face.
 
 Satisfying Clicks is about to make your browser experience that little bit more satisfying and fun. Why not give it a try?
 

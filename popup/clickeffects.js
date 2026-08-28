@@ -167,39 +167,100 @@ class SplatEffect extends ClickEffect {
 
     static name = "Splat"
 
-    static numCircles = 50
+    static numLobes = 7
+    static numArms = 10
+    static numDroplets = 6
+
+    createParticle(position, {
+        width,
+        height = width,
+        angle = 0,
+        distance = 0,
+        rotation = 0,
+        startScale = 0.1
+    }) {
+        const element = ClickEffect.createEffectElement({
+            appendTo: this.containerElement,
+            position
+        })
+
+        Object.assign(element.style, {
+            backgroundColor: this.color,
+            width: `${width}px`,
+            height: `${height}px`,
+            borderRadius: "50%",
+            willChange: "transform"
+        })
+
+        this.particles.push({
+            element,
+            angle,
+            distance,
+            rotation,
+            startScale
+        })
+    }
 
     construct(position) {
         this.containerElement = ClickEffect.createEffectElement()
-        
-        this.elements = []
-        for (let i = 0; i < SplatEffect.numCircles; i++) {
-            const halfSize = this.sizePx * 0.5
-            const randomAngle = Math.random() * Math.PI * 2
-            const randomOffsetDistance = Math.random() * halfSize
-            const randomSize = Math.max((halfSize - randomOffsetDistance * 0.8) * Math.random(), 5)
-            
-            const element = ClickEffect.createEffectElement({
-                appendTo: this.containerElement,
-                position: {
-                    x: position.x + Math.cos(randomAngle) * randomOffsetDistance,
-                    y: position.y + Math.sin(randomAngle) * randomOffsetDistance
-                }
-            })
+        this.particles = []
 
-            Object.assign(element.style, {
-                background: this.color,
-                width: `${randomSize}px`,
-                height: `${randomSize}px`,
-                borderRadius: "50%"
-            })
+        this.createParticle(position, {
+            width: this.sizePx * 0.58 * 0.8,
+            startScale: 0.2
+        })
 
-            this.elements.push(element)
+        for (let i = 0; i < SplatEffect.numLobes; i++) {
+            const angle = Math.random() * Math.PI * 2
+            const size = this.sizePx * 0.8 * (0.18 + Math.random() * 0.16)
+            this.createParticle(position, {
+                width: size,
+                angle,
+                distance: this.sizePx * 0.8 * (0.08 + Math.random() * 0.18),
+                rotation: Math.random() * 360,
+                startScale: 0.15
+            })
+        }
+
+        for (let i = 0; i < SplatEffect.numArms; i++) {
+            const angle = Math.random() * Math.PI * 2
+            const width = this.sizePx * 0.8 * (0.14 + Math.random() * 0.16)
+            this.createParticle(position, {
+                width,
+                height: width * (0.35 + Math.random() * 0.25),
+                angle,
+                distance: this.sizePx * 0.8 * (0.34 + Math.random() * 0.24),
+                rotation: angle / Math.PI * 180,
+                startScale: 0.05
+            })
+        }
+
+        for (let i = 0; i < SplatEffect.numDroplets; i++) {
+            const angle = Math.random() * Math.PI * 2
+            const size = Math.max(this.sizePx * 0.8 * (0.05 + Math.random() * 0.08), 2)
+            this.createParticle(position, {
+                width: size,
+                height: size * (0.7 + Math.random() * 0.6),
+                angle,
+                distance: this.sizePx * 0.8 * (0.55 + Math.random() * 0.35),
+                rotation: angle / Math.PI * 180,
+                startScale: 0.05
+            })
         }
     }
 
     update() {
-        this.containerElement.style.opacity = 1 - this.tValue
+        const impactProgress = EasingFunction.easeOut(Math.min(this.tValue / 0.28, 1))
+        this.containerElement.style.opacity = 1 - Math.max((this.tValue - 0.38) / 0.62, 0) ** 1.5
+
+        for (const particle of this.particles) {
+            const offset = particle.distance * impactProgress
+            const x = Math.cos(particle.angle) * offset
+            const y = Math.sin(particle.angle) * offset
+            const scale = particle.startScale + (1 - particle.startScale) * impactProgress
+
+            particle.element.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${particle.rotation}deg) scale(${scale})`
+        }
     }
 
     destruct() {

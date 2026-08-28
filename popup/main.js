@@ -239,7 +239,7 @@ function colorNameToHex(str){
 
 // Input Conversion Factors
 const SIZE_INPUT_MIN = 5
-const SIZE_INPUT_MAX = 100
+const SIZE_INPUT_MAX = 150
 const DURATION_INPUT_MIN = 100
 const DURATION_INPUT_MAX = 800
 
