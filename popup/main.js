@@ -41,9 +41,10 @@ function save() {
         clearTimeout(currentSaveTimeout)
     }
 
-    currentSaveTimeout = setTimeout(() => {
-        saveSettings()
-        tellContentScriptToUpdate()
+    currentSaveTimeout = setTimeout(async () => {
+        // without await, we'd have an ugly race condition (ew)
+        await saveSettings()
+        await tellContentScriptToUpdate()
     }, 300)
 }
 

@@ -617,6 +617,11 @@ const activeClickEffectOptions = {
 const defaultClickEffectOptions = {...activeClickEffectOptions}
 Object.freeze(defaultClickEffectOptions)
 
+// Functions only exist in memory and cannot be stored in chrome.storage.
+// Keep the easing function from the defaults when settings are loaded.
+const storedClickEffectOptionKeys = Object.keys(defaultClickEffectOptions)
+    .filter(key => key !== "smoothingFunction")
+
 
 // returns wether a given element is supposed to be focused
 // when a click happens (i.e. if the clickEffect should snap to it)
@@ -634,13 +639,16 @@ function isClickFocusElement(element) {
 
 // load settings from sync storage
 async function loadSettings() {
-    const options = await chrome.storage.sync.get(Object.keys(defaultClickEffectOptions))
+    const options = await chrome.storage.sync.get(storedClickEffectOptionKeys)
     Object.assign(activeClickEffectOptions, options)
 }
 
 // save settings to sync storage
 async function saveSettings() {
-    await chrome.storage.sync.set(activeClickEffectOptions)
+    const storedOptions = Object.fromEntries(
+        storedClickEffectOptionKeys.map(key => [key, activeClickEffectOptions[key]])
+    )
+    await chrome.storage.sync.set(storedOptions)
 }
 
 // ---------------- Spawning ClickEffects ----------------
